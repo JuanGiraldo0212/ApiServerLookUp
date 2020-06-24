@@ -37,6 +37,7 @@ func getServerInfo(uri string) []byte{
 		current.Country=string(doRequest("https://ipapi.co/"+item.Endpoints[0].IpAddress+"/country/"))
 		current.Owner=string(doRequest("https://ipapi.co/"+item.Endpoints[0].IpAddress+"/org/"))
 	}
+	item.Ssl_grade=sslComparison(servers)
 	scrapeResource(uri,item)
 	item_marshalled, err := json.Marshal(item)
 	if err==nil{
@@ -116,6 +117,29 @@ func scrapeResource(url string, item *Item) {
 	})
 	item.Logo=logo
 	
+}
+
+func sslComparison(servers []*Server) string{
+	grades:=make(map[string]int)
+	grades["A+"]=7
+	grades["A"]=6
+	grades["B"]=5
+	grades["C"]=4
+	grades["D"]=3
+	grades["E"]=2
+	grades["F"]=1
+	min:=99999
+	grd:=""
+	for i:=0;i<len(servers);i++{
+		server:=servers[i]
+		grade:=server.Grade
+		point:=grades[grade]
+		if point<min{
+			min=point
+			grd=grade
+		}
+	}
+	return grd
 }
 
 func serverInfo(ctx *fasthttp.RequestCtx) {
