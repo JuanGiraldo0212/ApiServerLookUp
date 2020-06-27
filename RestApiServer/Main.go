@@ -91,7 +91,7 @@ func archive(ctx *fasthttp.RequestCtx){
 
 func main() {
 	router := fasthttprouter.New()
-	router.GET("/servers/:name", serverInfo)
+	router.GET("/domain/:name", serverInfo)
 	router.GET("/archive/", archive)
 	log.Fatal(fasthttp.ListenAndServe(":8282", router.Handler))
 }
